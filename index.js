@@ -25,33 +25,16 @@ app.get('/api/hello', function (req, res) {
 });
 
 //who am i??
-app.get("/api/whoami",(req,res)=>{
-  
-  const myIp = req.socket.remoteAddress;
-  const userLang = req.headers["accept-language"]?.split(",")[0] || "desconhecido";
+app.get("/api/whoami", (req, res) => {
+  const ip = req.socket.remoteAddress || req.ip;
+  const language = req.headers["accept-language"]?.split(",")[0] || "unknown";
+  const software = req.headers["user-agent"] || "unknown";
 
-  const SO = {
-    type: os.type(),
-    platform: os.platform(),
-    arch: os.arch(),
-    hostname: os.hostname(),
-    totalMemory: os.totalmem(),
-    freeMemory: os.freemem(),
-    cpus: os.cpus().map(cpu => cpu.model)
-  };
-
-  const response = {
-    client: {
-      ip: myIp,
-      language: userLang
-    },
-    server: {
-      os: SO,
-      nodeVersion: process.version
-    }
-  };
-
-  return res.json(response);
+  res.json({
+    ipaddress: ip,
+    language: language,
+    software: software
+  });
 });
 
 var listener = app.listen(process.env.PORT || 3000, function () {
