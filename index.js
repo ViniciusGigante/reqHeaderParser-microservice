@@ -1,6 +1,6 @@
 // index.js
 // where your node app starts
-
+const os = require('os');
 // init project
 require('dotenv').config();
 var express = require('express');
@@ -24,7 +24,36 @@ app.get('/api/hello', function (req, res) {
   res.json({ greeting: 'hello API' });
 });
 
-// listen for requests :)
+//who am i??
+app.get("/api/whoami",(req,res)=>{
+  
+  const myIp = req.socket.remoteAddress;
+  const userLang = req.headers["accept-language"]?.split(",")[0] || "desconhecido";
+
+  const SO = {
+    type: os.type(),
+    platform: os.platform(),
+    arch: os.arch(),
+    hostname: os.hostname(),
+    totalMemory: os.totalmem(),
+    freeMemory: os.freemem(),
+    cpus: os.cpus().map(cpu => cpu.model)
+  };
+
+  const response = {
+    client: {
+      ip: myIp,
+      language: userLang
+    },
+    server: {
+      os: SO,
+      nodeVersion: process.version
+    }
+  };
+
+  return res.json(response);
+});
+
 var listener = app.listen(process.env.PORT || 3000, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
